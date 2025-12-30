@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "284346692486",
+    "project_id": "study-habit-planer",
+    "storage_bucket": "study-habit-planer.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284346692486:android:1dc96497eaa5a9abc33207",
+        "android_client_info": {
+          "package_name": "com.example.study_habit_planer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVT8GFHZgyHi-tzKANLgSKI37DIRm07ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
