@@ -5,45 +5,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    tools:context=".DashboardActivity">
+    tools:context=".NoteDetailActivity">
 
-    <TextView
-        android:id="@+id/textViewDashboardTitle"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/editTextNoteTitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Dashboard"
-        android:textSize="24sp"
+        android:hint="Titel"
+        android:inputType="textCapSentences"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/buttonGoToHabits"
+    <EditText
+        android:id="@+id/editTextNoteContent"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:text="Meine Gewohnheiten"
-        app:layout_constraintTop_toBottomOf="@id/textViewDashboardTitle"
+        android:layout_marginBottom="16dp"
+        android:background="@android:color/transparent"
+        android:gravity="top|start"
+        android:hint="Schreiben Sie hier Ihre Notiz..."
+        android:inputType="textMultiLine"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNoteTitle"
+        app:layout_constraintBottom_toTopOf="@+id/buttonSaveNote"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
-        android:id="@+id/buttonGoToNotes"
+        android:id="@+id/buttonSaveNote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Notizen"
-        app:layout_constraintTop_toBottomOf="@id/buttonGoToHabits"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/buttonGoToProfile"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Mein Profil"
-        app:layout_constraintTop_toBottomOf="@id/buttonGoToNotes"
+        android:text="Speichern"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

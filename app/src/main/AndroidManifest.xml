@@ -23,16 +23,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.StudyHabitPlaner">
-        </activity>
         <activity android:name=".RegisterActivity" />
         <activity android:name=".HabitDetailActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".DashboardActivity" />
         <activity android:name=".HabitsActivity" />
+        <activity android:name=".NotesActivity" />
+        <activity android:name=".NoteDetailActivity" />
     </application>
 
 </manifest>

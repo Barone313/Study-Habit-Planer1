@@ -1,0 +1,8 @@
+package com.example.study_habit_planer
+
+data class Note(
+    var id: String = "",
+    val title: String = "",
+    val content: String = "",
+    val createdAt: Long = 0L
+)
