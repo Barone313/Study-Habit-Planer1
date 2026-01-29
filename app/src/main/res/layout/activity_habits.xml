@@ -37,7 +37,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:contentDescription="Neue Gewohnheit hinzufügen"
-        android:src="@drawable/ic_input_add" 
+        android:src="@android:drawable/ic_input_add" 
         app:tint="@android:color/white"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
