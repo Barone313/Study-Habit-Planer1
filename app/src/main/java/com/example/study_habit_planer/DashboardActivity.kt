@@ -2,33 +2,33 @@ package com.example.study_habit_planer
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.example.study_habit_planer.databinding.ActivityDashboardBinding // Import der neuen Binding-Klasse
 import com.google.firebase.auth.FirebaseAuth
 
 class DashboardActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var binding: ActivityDashboardBinding // Der "persönliche Assistent" für Ihr Layout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dashboard)
+        // Der neue, moderne Weg, das Layout zu laden
+        binding = ActivityDashboardBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
 
-        val goToHabitsButton = findViewById<Button>(R.id.buttonGoToHabits)
-        val goToNotesButton = findViewById<Button>(R.id.buttonGoToNotes)
-        val goToProfileButton = findViewById<Button>(R.id.buttonGoToProfile)
-
-        goToHabitsButton.setOnClickListener {
+        // Direkter und sicherer Zugriff auf die Buttons über das binding-Objekt
+        binding.buttonGoToHabits.setOnClickListener {
             startActivity(Intent(this, HabitsActivity::class.java))
         }
 
-        goToNotesButton.setOnClickListener {
+        binding.buttonGoToNotes.setOnClickListener {
             startActivity(Intent(this, NotesActivity::class.java))
         }
 
-        goToProfileButton.setOnClickListener {
+        binding.buttonGoToProfile.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
         }
     }

@@ -1,132 +1,135 @@
 package com.example.study_habit_planer
 
 import android.os.Bundle
-import android.view.MenuItem
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.study_habit_planer.databinding.ActivityHabitsBinding // Import der ViewBinding-Klasse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 
 class HabitsActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
-    private lateinit var db: FirebaseFirestore
-    private lateinit var habitAdapter: HabitAdapter
-    private val habitsList = mutableListOf<Habit>()
+    // --- Variablen-Deklaration ---
 
-    private lateinit var newHabitTitleEditText: EditText
-    private lateinit var newHabitMinutesGoalEditText: EditText
+    // ViewBinding-Objekt für den sicheren Zugriff auf die Layout-Elemente.
+    private lateinit var binding: ActivityHabitsBinding
+
+    // Eine Instanz der Firebase-Datenbank.
+    private lateinit var db: FirebaseFirestore
+
+    // Eine Instanz für die Firebase-Authentifizierung, um den aktuellen Benutzer zu bekommen.
+    private lateinit var auth: FirebaseAuth
+
+    // Der Adapter, der die Daten mit der Liste (RecyclerView) verbindet.
+    private lateinit var habitAdapter: HabitAdapter
+
+    // Eine lokale Liste, um die geladenen Gewohnheiten zu speichern.
+    private val habitList = mutableListOf<Habit>()
+
+    // --- Activity-Lebenszyklus ---
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_habits)
 
-        // Add back button to the action bar
+        // 1. Layout mit ViewBinding aufbauen.
+        binding = ActivityHabitsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // 2. Firebase-Instanzen initialisieren.
+        db = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
+
+        // 3. Den Zurück-Pfeil in der oberen Leiste (ActionBar) anzeigen.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Meine Gewohnheiten"
 
-        auth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
+        // 4. Den RecyclerView und den Adapter einrichten.
+        setupRecyclerView()
 
-        newHabitTitleEditText = findViewById(R.id.editTextNewHabitTitle)
-        newHabitMinutesGoalEditText = findViewById(R.id.editTextMinutesGoal)
-        val addNewHabitButton = findViewById<Button>(R.id.buttonAddNewHabit)
-        val habitsRecyclerView = findViewById<RecyclerView>(R.id.recyclerViewHabits)
-
-        habitsRecyclerView.layoutManager = LinearLayoutManager(this)
-
-        habitAdapter = HabitAdapter(
-            habitsList,
-            { habit, isChecked -> updateHabitStatus(habit, isChecked) },
-            { habit -> deleteHabit(habit) }
-        )
-        habitsRecyclerView.adapter = habitAdapter
-
-        addNewHabitButton.setOnClickListener {
-            val title = newHabitTitleEditText.text.toString()
-            val minutesString = newHabitMinutesGoalEditText.text.toString()
-            val minutes = if (minutesString.isNotEmpty()) minutesString.toInt() else 0
-
-            if (title.isNotEmpty()) {
-                addNewHabit(title, minutes)
-                newHabitTitleEditText.text.clear()
-                newHabitMinutesGoalEditText.text.clear()
-            } else {
-                Toast.makeText(this, "Bitte einen Titel eingeben", Toast.LENGTH_SHORT).show()
-            }
+        // 5. Listener für den "+"-Button einrichten (die Logik kommt später).
+        binding.fabAddHabit.setOnClickListener {
+            // TODO: Dialog oder neue Activity zum Hinzufügen einer Gewohnheit öffnen.
+            Toast.makeText(this, "Funktion zum Hinzufügen kommt bald!", Toast.LENGTH_SHORT).show()
         }
 
+        // 6. Die Gewohnheiten aus Firebase laden.
         loadHabits()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle back button click
-        if (item.itemId == android.R.id.home) {
-            finish() // This will take the user back to the DashboardActivity
-            return true
+    // --- Private Hilfsfunktionen ---
+
+    private fun setupRecyclerView() {
+        // Den Adapter initialisieren. Wir übergeben ihm eine leere Liste und einen Callback.
+        habitAdapter = HabitAdapter(habitList) { habit, isChecked ->
+            // Dieser Code-Block wird ausgeführt, wenn eine Checkbox im Adapter geklickt wird.
+            updateHabitStatus(habit, isChecked)
         }
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun addNewHabit(title: String, minutesGoal: Int) {
-        val currentUser = auth.currentUser ?: return
-
-        val newHabit = Habit(
-            title = title,
-            description = "",
-            createdAt = System.currentTimeMillis(),
-            isDoneToday = false,
-            minutesGoal = minutesGoal
-        )
-
-        db.collection("users").document(currentUser.uid).collection("habits")
-            .add(newHabit)
-            .addOnSuccessListener { Toast.makeText(this, "Gewohnheit hinzugefügt!", Toast.LENGTH_SHORT).show() }
-            .addOnFailureListener { e -> Toast.makeText(this, "Fehler: ${e.message}", Toast.LENGTH_LONG).show() }
-    }
-
-    private fun updateHabitStatus(habit: Habit, isDone: Boolean) {
-        val currentUser = auth.currentUser
-        if (currentUser == null || habit.id.isEmpty()) return
-
-        db.collection("users").document(currentUser.uid).collection("habits").document(habit.id)
-            .update("isDoneToday", isDone) // Corrected field name
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Status konnte nicht gespeichert werden: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun deleteHabit(habit: Habit) {
-        val currentUser = auth.currentUser
-        if (currentUser == null || habit.id.isEmpty()) {
-            Toast.makeText(this, "Fehler: Kann Gewohnheit nicht löschen", Toast.LENGTH_SHORT).show()
-            return
+        // Den RecyclerView im Layout mit unserem Adapter und einem LayoutManager verbinden.
+        binding.recyclerViewHabits.apply {
+            layoutManager = LinearLayoutManager(this@HabitsActivity)
+            adapter = habitAdapter
         }
-
-        db.collection("users").document(currentUser.uid).collection("habits").document(habit.id)
-            .delete()
-            .addOnSuccessListener { Toast.makeText(this, "Gewohnheit gelöscht", Toast.LENGTH_SHORT).show() }
-            .addOnFailureListener { e -> Toast.makeText(this, "Fehler beim Löschen: ${e.message}", Toast.LENGTH_LONG).show() }
     }
 
     private fun loadHabits() {
+        // Den aktuellen Benutzer holen. Wenn niemand angemeldet ist, abbrechen.
         val currentUser = auth.currentUser ?: return
 
+        // Den Pfad zur "habits"-Sammlung des aktuellen Benutzers in Firestore definieren.
         db.collection("users").document(currentUser.uid).collection("habits")
-            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .orderBy("createdAt", Query.Direction.DESCENDING) // Neueste zuerst
             .addSnapshotListener { snapshots, e ->
+                // Dieser Listener wird bei jeder Änderung in der Datenbank automatisch aufgerufen.
+
+                // Fehlerbehandlung: Wenn etwas schiefgeht, eine Fehlermeldung anzeigen.
                 if (e != null) {
-                    Toast.makeText(this, "Fehler beim Laden: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Fehler beim Laden der Gewohnheiten", Toast.LENGTH_SHORT).show()
                     return@addSnapshotListener
                 }
-                habitsList.clear()
-                snapshots?.mapNotNull { it.toObject(Habit::class.java).apply { id = it.id } }?.let { habitsList.addAll(it) }
-                habitAdapter.notifyDataSetChanged()
+
+                // Wenn die Abfrage erfolgreich war:
+                if (snapshots != null) {
+                    // Die lokale Liste leeren.
+                    habitList.clear()
+                    // Alle Dokumente aus dem Ergebnis durchgehen.
+                    for (document in snapshots.documents) {
+                        // Jedes Dokument in ein Habit-Objekt umwandeln.
+                        val habit = document.toObject(Habit::class.java)
+                        if (habit != null) {
+                            // Die ID des Dokuments im Objekt speichern, damit wir es später wiederfinden.
+                            habit.id = document.id
+                            // Das Habit-Objekt zur lokalen Liste hinzufügen.
+                            habitList.add(habit)
+                        }
+                    }
+                    // Den Adapter mit der neuen, aktualisierten Liste benachrichtigen.
+                    habitAdapter.updateData(habitList)
+                }
             }
+    }
+
+    private fun updateHabitStatus(habit: Habit, isChecked: Boolean) {
+        // Den aktuellen Benutzer holen. Wenn niemand angemeldet ist, abbrechen.
+        val currentUser = auth.currentUser ?: return
+
+        // Den Pfad zum spezifischen Habit-Dokument in Firestore definieren.
+        db.collection("users").document(currentUser.uid).collection("habits").document(habit.id)
+            .update("doneToday", isChecked) // Nur das Feld "isDoneToday" aktualisieren.
+            .addOnSuccessListener {
+                // Optional: Kurze Erfolgsmeldung anzeigen.
+                // Toast.makeText(this, "Status aktualisiert", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                // Fehlerbehandlung: Wenn das Update fehlschlägt, eine Meldung anzeigen.
+                Toast.makeText(this, "Fehler beim Aktualisieren", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    // Sorgt dafür, dass der Zurück-Pfeil in der ActionBar die Activity schließt.
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 }
