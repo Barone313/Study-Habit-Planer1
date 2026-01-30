@@ -20,6 +20,9 @@ class DashboardActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         // Direkter und sicherer Zugriff auf die Buttons über das binding-Objekt
+        binding.buttonGoToProfile.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
         binding.buttonGoToHabits.setOnClickListener {
             startActivity(Intent(this, HabitsActivity::class.java))
         }
@@ -28,8 +31,6 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, NotesActivity::class.java))
         }
 
-        binding.buttonGoToProfile.setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java))
-        }
+
     }
 }
