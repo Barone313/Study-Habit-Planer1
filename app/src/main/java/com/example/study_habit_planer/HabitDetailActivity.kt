@@ -1,101 +1,96 @@
 package com.example.study_habit_planer
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.study_habit_planer.databinding.ActivityHabitDetailBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class HabitDetailActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityHabitDetailBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private var habitId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_habit_detail)
+        binding = ActivityHabitDetailBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
         habitId = intent.getStringExtra("habitId")
 
-        val titleEditText = findViewById<EditText>(R.id.editTextTitle)
-        val descriptionEditText = findViewById<EditText>(R.id.editTextDescription)
-        val saveButton = findViewById<Button>(R.id.buttonSave)
-        val deleteButton = findViewById<Button>(R.id.buttonDelete)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = if (habitId == null) "Neue Gewohnheit" else "Gewohnheit bearbeiten"
 
         if (habitId != null) {
-            loadHabitData(habitId!!, titleEditText, descriptionEditText)
+            loadHabitData(habitId!!)
         }
 
-        saveButton.setOnClickListener {
-            val title = titleEditText.text.toString()
-            val description = descriptionEditText.text.toString()
-            if (title.isNotEmpty()) {
-                saveHabit(habitId, title, description)
-            } else {
-                Toast.makeText(this, "Title cannot be empty", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        deleteButton.setOnClickListener {
-            if (habitId != null) {
-                deleteHabit(habitId!!)
-            }
+        binding.buttonSave.setOnClickListener {
+            saveHabit()
         }
     }
 
-    private fun loadHabitData(habitId: String, titleEditText: EditText, descriptionEditText: EditText) {
-        val userId = auth.currentUser?.uid
-        if (userId != null) {
-            db.collection("users").document(userId).collection("habits").document(habitId)
-                .get()
-                .addOnSuccessListener { document ->
-                    if (document != null) {
-                        val habit = document.toObject(Habit::class.java)
-                        if (habit != null) {
-                            titleEditText.setText(habit.title)
-                            descriptionEditText.setText(habit.description)
-                        }
-                    }
-                }
+    private fun loadHabitData(habitId: String) {
+        val userId = auth.currentUser?.uid ?: return
+
+        db.collection("users").document(userId).collection("habits").document(habitId)
+            .get()
+            .addOnSuccessListener { document ->
+                val habit = document.toObject(Habit::class.java) ?: return@addOnSuccessListener
+                binding.editTextTitle.setText(habit.title)
+                binding.editTextDescription.setText(habit.description)
+                binding.editTextPlannedMinutes.setText(habit.plannedMinutes.toString())
+                binding.editTextActualMinutes.setText(habit.actualMinutes.toString())
+                binding.switchDone.isChecked = habit.isDoneToday
+            }
+    }
+
+    private fun saveHabit() {
+        val title = binding.editTextTitle.text.toString()
+        if (title.isEmpty()) {
+            Toast.makeText(this, "Der Titel darf nicht leer sein", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val userId = auth.currentUser?.uid ?: return
+
+        val description = binding.editTextDescription.text.toString()
+        val plannedMinutes = binding.editTextPlannedMinutes.text.toString().toIntOrNull() ?: 0
+        val actualMinutes = binding.editTextActualMinutes.text.toString().toIntOrNull() ?: 0
+        val isDone = binding.switchDone.isChecked
+
+        val habit = Habit(
+            id = habitId ?: "",
+            title = title,
+            description = description,
+            plannedMinutes = plannedMinutes,
+            actualMinutes = actualMinutes,
+            isDoneToday = isDone
+        )
+
+        val collection = db.collection("users").document(userId).collection("habits")
+        val task = if (habitId == null) {
+            collection.add(habit) // Neue Gewohnheit erstellen
+        } else {
+            collection.document(habitId!!).set(habit) // Bestehende aktualisieren
+        }
+
+        task.addOnSuccessListener {
+            Toast.makeText(this, "Gewohnheit gespeichert", Toast.LENGTH_SHORT).show()
+            finish()
+        }.addOnFailureListener {
+            Toast.makeText(this, "Fehler beim Speichern", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun saveHabit(habitId: String?, title: String, description: String) {
-        val userId = auth.currentUser?.uid
-        if (userId != null) {
-            val habit = Habit(
-                title = title,
-                description = description,
-                createdAt = System.currentTimeMillis()
-            )
-            val collection = db.collection("users").document(userId).collection("habits")
-            val task = if (habitId != null) {
-                collection.document(habitId).set(habit)
-            } else {
-                collection.add(habit)
-            }
-            task.addOnSuccessListener {
-                finish()
-            }.addOnFailureListener {
-                Toast.makeText(this, "Failed to save habit", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun deleteHabit(habitId: String) {
-        val userId = auth.currentUser?.uid
-        if (userId != null) {
-            db.collection("users").document(userId).collection("habits").document(habitId)
-                .delete()
-                .addOnSuccessListener { 
-                    finish() 
-                }
-        }
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 }

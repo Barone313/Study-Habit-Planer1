@@ -38,7 +38,7 @@ class LoginActivity : AppCompatActivity() {
                             startActivity(intent)
                             finish()
                         } else {
-                            // Log the detailed error to Logcat
+
                             Log.e("LoginActivity", "Login failed", task.exception)
                             val errorMessage = task.exception?.message ?: "Unknown login error"
                             Toast.makeText(baseContext, "Login failed: $errorMessage",
