@@ -1,9 +1,11 @@
 package com.example.study_habit_planer
 
+import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.study_habit_planer.databinding.ActivityHabitsBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -42,6 +44,9 @@ class HabitsActivity : AppCompatActivity() {
             },
             onHabitChecked = { habit, isChecked ->
                 updateHabitStatus(habit, isChecked)
+            },
+            onHabitLongClicked = { habit ->
+                showDeleteConfirmationDialog(habit)
             }
         )
         binding.recyclerViewHabits.apply {
@@ -86,6 +91,33 @@ class HabitsActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Log.w("HabitsActivity", "Error updating habit status.", e)
+            }
+    }
+
+    private fun showDeleteConfirmationDialog(habit: Habit) {
+        AlertDialog.Builder(this)
+            .setTitle("Gewohnheit löschen")
+            .setMessage("Möchten Sie diese Gewohnheit wirklich löschen?")
+            .setPositiveButton("Löschen") { _, _ ->
+                deleteHabit(habit)
+            }
+            .setNegativeButton("Abbrechen", null)
+            .show()
+    }
+
+    private fun deleteHabit(habit: Habit) {
+        if (userId == null || habit.id.isEmpty()) {
+            Log.e("HabitsActivity", "Cannot delete habit. User ID or Habit ID is missing.")
+            return
+        }
+
+        db.collection("users").document(userId).collection("habits").document(habit.id)
+            .delete()
+            .addOnSuccessListener {
+                Log.d("HabitsActivity", "Habit deleted successfully.")
+            }
+            .addOnFailureListener { e ->
+                Log.w("HabitsActivity", "Error deleting habit.", e)
             }
     }
 

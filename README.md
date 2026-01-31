@@ -36,5 +36,5 @@ Die App richtet sich vor allem an Schüler:innen und Studierende, die ihre Lerno
 - Architektur (Beispiel): MVVM
 - Mögliche Libraries/Tools:
   - ViewModel + LiveData / StateFlow
-  - Room oder eine andere lokale Datenbank für Notizen und Habits
-  - Optional: Firebase Authentication / Firestore für Nutzerkonten und Sync
+  - Firebase Authentifizierung / Firestore für Datenbank für Notizen und Habits
+  
