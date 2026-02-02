@@ -18,7 +18,7 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        // Add back button to the action bar
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Registrieren"
 
@@ -54,9 +54,9 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle back button click
+
         if (item.itemId == android.R.id.home) {
-            finish() // This will take the user back to the LoginActivity
+            finish()
             return true
         }
         return super.onOptionsItemSelected(item)

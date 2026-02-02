@@ -49,6 +49,7 @@ class HabitsActivity : AppCompatActivity() {
                 showDeleteConfirmationDialog(habit)
             }
         )
+
         binding.recyclerViewHabits.apply {
             layoutManager = LinearLayoutManager(this@HabitsActivity)
             adapter = habitAdapter

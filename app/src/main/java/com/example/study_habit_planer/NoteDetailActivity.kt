@@ -77,26 +77,27 @@ class NoteDetailActivity : AppCompatActivity() {
         val currentUser = auth.currentUser ?: return
         val collection = db.collection("users").document(currentUser.uid).collection("notes")
 
-        if (noteId == null) { // Creating a new note
+        if (noteId == null) {
             val newNote = Note(
                 title = title,
                 content = content,
                 createdAt = System.currentTimeMillis()
+
             )
             collection.add(newNote)
                 .addOnSuccessListener { 
-                    finish() // Go back to the notes list after saving
+                    finish()
                 }.addOnFailureListener { e ->
                     Toast.makeText(this, "Fehler beim Speichern: ${e.message}", Toast.LENGTH_LONG).show()
                 }
-        } else { // Updating an existing note
+        } else {
             val noteUpdates = mapOf(
                 "title" to title,
                 "content" to content
             )
             collection.document(noteId!!).update(noteUpdates)
                 .addOnSuccessListener { 
-                    finish() // Go back to the notes list after saving
+                    finish()
                 }.addOnFailureListener { e ->
                     Toast.makeText(this, "Fehler beim Speichern: ${e.message}", Toast.LENGTH_LONG).show()
                 }

@@ -16,7 +16,7 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        // Add back button to the action bar
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Profil"
 
@@ -38,9 +38,9 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle back button click
+
         if (item.itemId == android.R.id.home) {
-            finish() // This will take the user back to the DashboardActivity
+            finish()
             return true
         }
         return super.onOptionsItemSelected(item)

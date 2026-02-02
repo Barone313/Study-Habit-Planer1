@@ -33,6 +33,7 @@ class HabitDetailActivity : AppCompatActivity() {
 
         binding.buttonSave.setOnClickListener {
             saveHabit()
+            finish()
         }
     }
 
@@ -76,9 +77,9 @@ class HabitDetailActivity : AppCompatActivity() {
 
         val collection = db.collection("users").document(userId).collection("habits")
         val task = if (habitId == null) {
-            collection.add(habit) // Neue Gewohnheit erstellen
+            collection.add(habit)
         } else {
-            collection.document(habitId!!).set(habit) // Bestehende aktualisieren
+            collection.document(habitId!!).set(habit)
         }
 
         task.addOnSuccessListener {

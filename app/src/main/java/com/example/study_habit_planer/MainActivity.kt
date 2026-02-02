@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        // Prüfen, ob ein Benutzer bereits angemeldet ist
+
         if (auth.currentUser != null) {
 
             startActivity(Intent(this, DashboardActivity::class.java))
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
         }
 
-        // Schließen die MainActivity
+
         finish()
     }
 }
