@@ -31,6 +31,10 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, NotesActivity::class.java))
         }
 
+        binding.buttonGoToFixedCosts.setOnClickListener {
+            startActivity(Intent(this, FixedCostsActivity::class.java))
+        }
+
 
     }
 }

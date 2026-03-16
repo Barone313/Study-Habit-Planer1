@@ -47,6 +47,7 @@ class NoteDetailActivity : AppCompatActivity() {
 
             if (title.isNotEmpty() || content.isNotEmpty()) {
                 saveNote(title, content)
+
             } else {
                 Toast.makeText(this, "Titel oder Inhalt dürfen nicht leer sein", Toast.LENGTH_SHORT).show()
             }
@@ -82,6 +83,7 @@ class NoteDetailActivity : AppCompatActivity() {
                 title = title,
                 content = content,
                 createdAt = System.currentTimeMillis()
+
 
             )
             collection.add(newNote)
